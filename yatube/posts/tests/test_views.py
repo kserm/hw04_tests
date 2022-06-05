@@ -76,8 +76,8 @@ class PostsPagesTests(TestCase):
     def test_index_page_2_show_correct_context(self):
         """Шаблон index сформирован с правильным контекстом и содержит
          нужное количество постов (стр.2)."""
-        response = self.authorized_client.get(reverse('posts:index') +
-                                              '?page=2')
+        response = self.authorized_client.get(reverse('posts:index')
+                                              + '?page=2')
         for post in response.context['page_obj']:
             self.assertIsInstance(post, Post)
             self.assertIsNotNone(post.group.title)
@@ -89,7 +89,7 @@ class PostsPagesTests(TestCase):
          нужное количество постов."""
         response = self.authorized_client.get(reverse(
             'posts:group_list', kwargs={'slug': 'test-slug1'}
-            ))
+        ))
         for post in response.context['page_obj']:
             self.assertIsInstance(post, Post)
             self.assertEqual(post.group.title, 'Тестовая группа 1')
@@ -102,7 +102,7 @@ class PostsPagesTests(TestCase):
          нужное количество постов (стр.2)."""
         response = self.authorized_client.get(reverse(
             'posts:group_list', kwargs={'slug': 'test-slug2'}
-            ))
+        ))
         for post in response.context['page_obj']:
             self.assertIsInstance(post, Post)
             self.assertEqual(post.group.title, 'Тестовая группа 2')
@@ -111,7 +111,7 @@ class PostsPagesTests(TestCase):
         self.assertEqual(posts_count, 5)
         diff_group_posts = self.authorized_client.get(reverse(
             'posts:group_list', kwargs={'slug': 'test-slug1'}
-            ))
+        ))
         self.assertNotEqual(diff_group_posts.context['group'].title,
                             response.context['group'].title)
 
@@ -120,7 +120,7 @@ class PostsPagesTests(TestCase):
          нужное количество постов."""
         response = self.authorized_client.get(reverse(
             'posts:profile', kwargs={'username': 'auth'}
-            ))
+        ))
         for post in response.context['page_obj']:
             self.assertIsInstance(post, Post)
             self.assertIsNotNone(post.group.title)
@@ -133,7 +133,7 @@ class PostsPagesTests(TestCase):
          нужное количество постов (стр.2)."""
         response = self.authorized_client.get(reverse(
             'posts:profile', kwargs={'username': 'auth'}
-            ) + '?page=2')
+        ) + '?page=2')
         for post in response.context['page_obj']:
             self.assertIsInstance(post, Post)
             self.assertIsNotNone(post.group.title)
@@ -146,7 +146,7 @@ class PostsPagesTests(TestCase):
         id = 7
         response = self.authorized_client.get(reverse(
             'posts:post_detail', kwargs={'post_id': id}
-            ))
+        ))
         post = response.context['post']
         self.assertIsInstance(post, Post)
         self.assertEqual(post.id, id)
@@ -173,7 +173,7 @@ class PostsPagesTests(TestCase):
         """Шаблон post_edit сформирован с правильным контекстом"""
         response = self.authorized_client.get(reverse(
             'posts:post_edit', kwargs={'post_id': 1}
-            ))
+        ))
         form_fields = {
             'text': forms.fields.CharField,
             'group': forms.fields.ChoiceField
@@ -187,6 +187,6 @@ class PostsPagesTests(TestCase):
         """Шаблон post_edit недоступен для неавторизованного пользователя"""
         response = self.guest_client.get(reverse(
             'posts:post_edit', kwargs={'post_id': 1}
-            ))
+        ))
         self.assertTemplateNotUsed(response, 'posts/create_post.html')
         self.assertEqual(response.status_code, HTTPStatus.FOUND)

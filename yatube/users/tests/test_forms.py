@@ -16,7 +16,7 @@ class UsersCreationFormTests(TestCase):
             last_name='Authorov',
             username='auth',
             email='author@mail.com',
-            )
+        )
         cls.form = CreationForm()
 
     def setUp(self) -> None:
@@ -41,8 +41,8 @@ class UsersCreationFormTests(TestCase):
         self.assertRedirects(
             response,
             reverse('posts:index')
-            )
-        self.assertEqual(User.objects.count(), users_count+1)
+        )
+        self.assertEqual(User.objects.count(), users_count + 1)
         self.assertTrue(
             User.objects.filter(
                 first_name='Лев',

@@ -18,10 +18,10 @@ class PostCreateFormTests(TestCase):
             description='Тестовое описание',
         )
         cls.post = Post.objects.create(
-                author=cls.user,
-                text='Тестовый пост',
-                group=cls.group
-            )
+            author=cls.user,
+            text='Тестовый пост',
+            group=cls.group
+        )
         cls.form = PostForm()
 
     def setUp(self) -> None:
@@ -40,12 +40,12 @@ class PostCreateFormTests(TestCase):
             reverse('posts:post_create'),
             data=context,
             follow=True
-            )
+        )
         self.assertRedirects(response, reverse(
             'posts:profile',
             kwargs={'username': 'auth'})
-            )
-        self.assertEqual(Post.objects.count(), posts_count+1)
+        )
+        self.assertEqual(Post.objects.count(), posts_count + 1)
         self.assertTrue(
             Post.objects.filter(
                 text='Новый тестовый пост',
@@ -66,11 +66,11 @@ class PostCreateFormTests(TestCase):
             ),
             data=context,
             follow=True
-            )
-        self.assertRedirects(response, reverse(
-            'posts:post_detail', kwargs={'post_id': 1}
-            )
-            )
+        )
+        self.assertRedirects(
+            response,
+            reverse('posts:post_detail', kwargs={'post_id': 1})
+        )
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertTrue(
             Post.objects.filter(
