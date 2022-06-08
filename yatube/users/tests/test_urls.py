@@ -53,14 +53,17 @@ class UsersURLTests(TestCase):
         for address, template in USERS_URL_DICT_GUEST.items():
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
 
     def test_urls_uses_correct_template_for_authorized(self):
         for address, template in USERS_URL_DICT_GUEST.items():
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
         for address, template in USERS_URL_DICT_AUTH.items():
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)

@@ -31,6 +31,7 @@ class AboutTests(TestCase):
         for address, template in ABOUT_URLS_DICT.items():
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
 
     def test_about_page_accessible_by_name(self):
@@ -46,4 +47,5 @@ class AboutTests(TestCase):
         for name, template in ABOUT_VIEWS_DICT.items():
             with self.subTest(name=name):
                 response = self.guest_client.get(reverse(name))
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)

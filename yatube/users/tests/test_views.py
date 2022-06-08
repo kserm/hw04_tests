@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase, Client
 from django.urls import reverse
 from django import forms
+from http import HTTPStatus
 
 
 User = get_user_model()
@@ -44,14 +45,17 @@ class UsersPagesTests(TestCase):
         for name, template in USERS_PAGES_DICT_GUEST.items():
             with self.subTest(name=name):
                 response = self.authorized_client.get(name)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
         for name, template in USERS_PAGES_DICT_AUTH.items():
             with self.subTest(name=name):
                 response = self.authorized_client.get(name)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
 
     def test_signup_page_show_correct_context(self):
         response = self.authorized_client.get(reverse('users:signup'))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         form_fields = {
             'first_name': forms.fields.CharField,
             'last_name': forms.fields.CharField,

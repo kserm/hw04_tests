@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 from django.test import TestCase
-
 from posts.models import Group, Post
 
 User = get_user_model()
@@ -13,7 +13,7 @@ class PostModelTest(TestCase):
         cls.user = User.objects.create_user(username='auth')
         cls.group = Group.objects.create(
             title='Тестовая группа',
-            slug='Тестовый слаг',
+            slug='test-slug',
             description='Тестовое описание',
         )
         cls.post = Post.objects.create(
@@ -82,3 +82,12 @@ class PostModelTest(TestCase):
             with self.subTest(field=field):
                 self.assertEqual(
                     post._meta.get_field(field).help_text, expected_value)
+
+    def test_validate_slug_field(self):
+        """Проверяем, что поле slug должно быть уникальным."""
+        with self.assertRaises(IntegrityError):
+            Group.objects.create(
+                title='Тестовая группа',
+                slug='test-slug',
+                description='Тестовое описание',
+            )

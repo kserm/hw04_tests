@@ -3,6 +3,7 @@ from posts.forms import PostForm
 from posts.models import Post, Group
 from django.test import Client, TestCase
 from django.urls import reverse
+from http import HTTPStatus
 
 User = get_user_model()
 
@@ -41,6 +42,7 @@ class PostCreateFormTests(TestCase):
             data=context,
             follow=True
         )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertRedirects(response, reverse(
             'posts:profile',
             kwargs={'username': 'auth'})
@@ -55,26 +57,32 @@ class PostCreateFormTests(TestCase):
 
     def test_edit_post(self):
         posts_count = Post.objects.count()
+        new_group = Group.objects.create(
+            title='Новая тестовая группа',
+            slug='test-slug-new',
+            description='Новое тестовое описание',
+        )
         context = {
             'text': 'Новый тестовый пост изменен',
-            'group': (self.group, 1),
-            # 'group': '',
+            'group': (self.group, new_group.id)
         }
+        post = Post.objects.first()
         response = self.authorized_client.post(
             reverse(
-                'posts:post_edit', kwargs={'post_id': 1}
+                'posts:post_edit', kwargs={'post_id': post.id}
             ),
             data=context,
             follow=True
         )
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertRedirects(
             response,
-            reverse('posts:post_detail', kwargs={'post_id': 1})
+            reverse('posts:post_detail', kwargs={'post_id': post.id})
         )
         self.assertEqual(Post.objects.count(), posts_count)
         self.assertTrue(
             Post.objects.filter(
                 text='Новый тестовый пост изменен',
-                group=1
+                group=new_group.id
             ).exists()
         )

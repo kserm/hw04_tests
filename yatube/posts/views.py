@@ -67,4 +67,4 @@ def post_edit(request, post_id: int):
                                                           'is_edit': True})
     else:
         form = PostForm()
-        return render(request, 'posts/create_post.html', {'form': form})
+        return redirect('posts:post_create')

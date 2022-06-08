@@ -1,7 +1,8 @@
-from http import HTTPStatus
 from django.test import TestCase, Client
 from django.contrib.auth import get_user_model
 from posts.models import Post, Group
+from django.urls import reverse
+from http import HTTPStatus
 
 
 User = get_user_model()
@@ -65,14 +66,42 @@ class PostsURLTests(TestCase):
         for address, template in POST_URL_DICT_GUEST.items():
             with self.subTest(address=address):
                 response = self.guest_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
 
     def test_urls_uses_correct_template_for_authorized(self):
         for address, template in POST_URL_DICT_GUEST.items():
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
         for address, template in POST_URL_DICT_AUTH.items():
             with self.subTest(address=address):
                 response = self.authorized_client.get(address)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
                 self.assertTemplateUsed(response, template)
+
+    def test_foreign_author_edit_post_redirect(self):
+        foreigner = User.objects.create_user(username='foreigner')
+        self.foreign_client = Client()
+        self.foreign_client.force_login(foreigner)
+        response = self.foreign_client.get('/posts/1/edit/', follow=True)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertRedirects(
+            response,
+            reverse(
+                'posts:post_create'
+            )
+        )
+
+    def test_url_redirects_for_guest(self):
+        urls_redirect_dict = {
+            reverse('posts:post_create'): '/auth/login/?next=/create/',
+            reverse('posts:post_edit', kwargs={'post_id': 1}):
+                '/auth/login/?next=/posts/1/edit/',
+        }
+        for address, redirect in urls_redirect_dict.items():
+            with self.subTest(address=address):
+                response = self.guest_client.get(address, follow=True)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
+                self.assertRedirects(response, redirect)
